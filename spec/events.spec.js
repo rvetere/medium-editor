@@ -66,6 +66,31 @@ describe('MediumEditor.Events TestCase', function () {
         });
     });
 
+    describe('Touch event Listener', function () {
+        it('should be called when a touch event occurs', function () {
+            var editor = this.newMediumEditor('.editor'),
+            focusedEditable,
+            blurredEditable,
+            focusListener = function (event, editable) {
+                focusedEditable = editable;
+            },
+            blurListener = function (event, editable) {
+                blurredEditable = editable;
+            };
+            editor.subscribe('focus', focusListener);
+            editor.subscribe('blur', blurListener);
+
+            editor.selectElement(this.el.firstChild);
+            expect(focusedEditable).toBe(this.el);
+            expect(blurredEditable).toBeUndefined();
+
+            fireEvent(document.body, 'mousedown');
+            fireEvent(document.body, 'mouseup');
+            fireEvent(document.body, 'click');
+            expect(blurredEditable).toBe(this.el);
+        });
+    });
+
     describe('Custom Focus/Blur Listener', function () {
         it('should be called and passed the editable element when the editable gets focus', function () {
             var editor = this.newMediumEditor('.editor'),

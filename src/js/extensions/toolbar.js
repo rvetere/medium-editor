@@ -251,7 +251,9 @@
                 document.onselectionchange = function (event) {
                     clearTimeout(this._selectionEndTimer);
                     this._selectionEndTimer = setTimeout(function () {
-                        this.handleDocumentMouseup(event);
+                        if (this.isToolbarDefaultActionsDisplayed()) {
+                            this.handleDocumentMouseup(event);
+                        }
                     }.bind(this), 500);
                 }.bind(this);
 
@@ -681,7 +683,9 @@
         },
 
         isTouchDevice: function () {
-            return ('ontouchstart' in document.documentElement) && this.supportTouch === true;
+            return ('ontouchstart' in document.documentElement) &&
+                this.supportTouch === true &&
+                navigator.userAgent.indexOf('PhantomJS') === -1;
         }
     });
 
