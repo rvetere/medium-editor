@@ -329,6 +329,58 @@ describe('Anchor Button TestCase', function () {
             expect(link).not.toBeNull();
             expect(link.href).toBe(validUrl.toLowerCase());
         });
+        it('should change spaces to %20 for a valid url if linkValidation options is set to true', function () {
+            var editor = this.newMediumEditor('.editor', {
+                anchor: {
+                    linkValidation: true
+                }
+            }),
+                link,
+                anchorExtension = editor.getExtensionByName('anchor'),
+                expectedOpts = {
+                    value: 'http://te%20s%20t.com/',
+                    target: '_self'
+                };
+
+            spyOn(editor, 'execAction').and.callThrough();
+
+            selectElementContentsAndFire(editor.elements[0]);
+            anchorExtension.showForm('te s t.com/');
+            fireEvent(anchorExtension.getForm().querySelector('a.medium-editor-toolbar-save'), 'click');
+
+            expect(editor.execAction).toHaveBeenCalledWith('createLink', expectedOpts);
+
+            link = editor.elements[0].querySelector('a');
+            expect(link).not.toBeNull();
+            expect(link.href).toBe(expectedOpts.value);
+        });
+        it('should not change spaces to %20 if linkValidation is set to false', function () {
+            var editor = this.newMediumEditor('.editor', {
+                anchor: {
+                    linkValidation: false
+                }
+            }),
+                link,
+                anchorExtension = editor.getExtensionByName('anchor'),
+                expectedOpts = {
+                    value: 'http://te s t.com/',
+                    target: '_self'
+                };
+
+            spyOn(editor, 'execAction').and.callThrough();
+
+            selectElementContentsAndFire(editor.elements[0]);
+            anchorExtension.showForm(expectedOpts.value);
+            fireEvent(anchorExtension.getForm().querySelector('a.medium-editor-toolbar-save'), 'click');
+
+            // Chrome, Edge, and IE will automatically escape the href once it's set on the link
+            // So for this case, we'll only look at the call to execAction to see what URL it was trying to set
+            // since the value of the link's href could be different values
+            expect(editor.execAction).toHaveBeenCalledWith('createLink', expectedOpts);
+
+            link = editor.elements[0].querySelector('a');
+            expect(link).not.toBeNull();
+        });
         it('should add target="_blank" when "open in a new window" checkbox is checked', function () {
             var editor = this.newMediumEditor('.editor', {
                 anchor: {
@@ -397,7 +449,7 @@ describe('Anchor Button TestCase', function () {
                 keyCode: MediumEditor.util.keyCode.ENTER
             });
             opts = {
-                url: 'http://test.com',
+                value: 'http://test.com',
                 target: '_self',
                 buttonClass: 'btn btn-default'
             };
@@ -473,7 +525,7 @@ describe('Anchor Button TestCase', function () {
             });
 
             expect(editor.createLink).toHaveBeenCalledWith({
-                url: 'http://www.example.com',
+                value: 'http://www.example.com',
                 target: '_blank'
             });
             expect(window.getSelection().toString()).toBe('ipsum', 'selected text should remain selected');
@@ -506,7 +558,7 @@ describe('Anchor Button TestCase', function () {
             });
 
             expect(editor.createLink).toHaveBeenCalledWith({
-                url: 'http://www.example.com',
+                value: 'http://www.example.com',
                 target: '_self'
             });
 
@@ -546,7 +598,7 @@ describe('Anchor Button TestCase', function () {
             });
 
             expect(editor.createLink).toHaveBeenCalledWith({
-                url: 'http://www.example.com',
+                value: 'http://www.example.com',
                 target: '_self'
             });
 
@@ -585,7 +637,7 @@ describe('Anchor Button TestCase', function () {
             });
 
             expect(editor.createLink).toHaveBeenCalledWith({
-                url: 'http://www.example.com',
+                value: 'http://www.example.com',
                 target: '_self'
             });
 

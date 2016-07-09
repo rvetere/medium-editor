@@ -150,12 +150,12 @@
                 targetCheckbox = this.getAnchorTargetCheckbox(),
                 buttonCheckbox = this.getAnchorButtonCheckbox();
 
-            opts = opts || { url: '' };
+            opts = opts || { value: '' };
             // TODO: This is for backwards compatability
             // We don't need to support the 'string' argument in 6.0.0
             if (typeof opts === 'string') {
                 opts = {
-                    url: opts
+                    value: opts
                 };
             }
 
@@ -164,7 +164,7 @@
             MediumEditor.extensions.form.prototype.showForm.apply(this);
             this.setToolbarPosition();
 
-            input.value = opts.url;
+            input.value = opts.value;
             input.focus();
 
             // If we have a target checkbox, we want it to be checked/unchecked
@@ -201,11 +201,11 @@
             var targetCheckbox = this.getAnchorTargetCheckbox(),
                 buttonCheckbox = this.getAnchorButtonCheckbox(),
                 opts = {
-                    url: this.getInput().value.trim()
+                    value: this.getInput().value.trim()
                 };
 
             if (this.linkValidation) {
-                opts.url = this.checkLinkFormat(opts.url);
+                opts.value = this.checkLinkFormat(opts.value);
             }
 
             opts.target = '_self';
@@ -242,7 +242,7 @@
                 return 'tel:' + value;
             } else {
                 // Check for URL scheme and default to http:// if none found
-                return (urlSchemeRegex.test(value) ? '' : 'http://') + value;
+                return (urlSchemeRegex.test(value) ? '' : 'http://') + encodeURI(value);
             }
         },
 
